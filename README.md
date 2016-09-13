@@ -1,6 +1,8 @@
 # Hyber-SDK-Java
 Easy way to integrate Java-powered system with Hyber platform
 
+[![Build Status](https://travis-ci.org/Incuube/Hyber-SDK-Java.svg)](https://travis-ci.org/Incuube/Hyber-SDK-Java)
+
 ## Usage example
 
 import com.hyber.*
