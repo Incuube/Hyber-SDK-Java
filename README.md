@@ -15,7 +15,7 @@ String login = "test";
 String password = "pass";
 int identifier = 5;
 String alphaName = "name";
-Sender sender = new MessageSender(login, password, identifier, alphaName);
+HttpSender sender = new MessageSender(login, password, identifier, alphaName);
 ```
 
 You may specify some addition sender parameters, however they are not mandatory
@@ -34,7 +34,7 @@ Message have mandatory and optional fields
 
 - Create message with phone and text (mandatory)
 ```java
-long phonenumber = 380000000000;
+long phonenumber = 380000000000L;
 Message message = new Message(phonenumber);
 ```
 
@@ -88,7 +88,7 @@ String actionUrl = "http://google.com";
 String caption =  "go to google";           
  
 //mandatory 
-Channel channelPush = new ChannelPush(pushTtlSeconds, pushText); 
+ChannelPush channelPush = new ChannelPush(pushText, pushTtlSeconds); 
 
 //optional, url for image that will displayed in push message
 channelPush.setImageUrl(imageUrl);       
@@ -118,7 +118,7 @@ String actionUrl = "http://google.com";
 String caption =  "go to google";                     
 
 //mandatory
-Channel channelViber = new ChannelViber(viberTtlSeconds, viberText); 
+ChannelViber channelViber = new ChannelViber(viberText, viberTtlSeconds); 
 
 //optional, can be set only with button
 channelViber.setImageUrl(imageUrl);                    
@@ -134,15 +134,15 @@ Create specific channel for partner sms
 ```java
 int smsTtlSeconds = 15;
 String smsText = "text for sms message";
-Channel channelSms = new ChannelSms(smsTtlSeconds, smsText); //mandatory
+ChannelSms channelSms = new ChannelSms(smsText, smsTtlSeconds); //mandatory
 ```
 
 Build channels order
 ```java
 //mandatory, order from left to right direction (left is first partner, right is last)
-PartnersSendOrder[] order = new PartnersSendOrder[]{channelPush, channelViber, channelSms}; 
+Channel[] channels = new Channel[]{channelPush, channelViber, channelSms}; 
 
-message.setPartnerSendOrder(order); 
+message.setChannels(channels); 
 ```
 
 ## Send message
