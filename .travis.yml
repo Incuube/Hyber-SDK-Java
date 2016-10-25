@@ -1,6 +1,10 @@
 sudo: false
 language: java
 
+branches:
+  except:
+    - mvn-repo
+
 jdk:
   - oraclejdk8
   - oraclejdk7
