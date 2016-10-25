@@ -2,8 +2,8 @@ sudo: false
 language: java
 
 branches:
-  except:
-    - mvn-repo
+  only:
+    - master
 
 jdk:
   - oraclejdk8
