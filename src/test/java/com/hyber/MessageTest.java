@@ -24,7 +24,7 @@ public class MessageTest {
         Message msg = generateValidMessage();
         long startTime = getStartTime();
         msg.setStartTime(startTime);
-        String request = msg.toJson(alphaName).toString();
+        String request = msg.toJson().toString();
         System.out.println(request);
         JSONObject actual = new JSONObject(request);
         assertEquals(startTime, sdf.parse(actual.getString("start_time")).getTime() / 1000);
@@ -36,10 +36,11 @@ public class MessageTest {
 
         JSONObject actualChannelOptions = actual.getJSONObject("channel_options");
         testViberOptions(actualChannelOptions);
+        testSmsOptions(actualChannelOptions);
         testPushOptions(actualChannelOptions);
-
-        testTexts(actual);
     }
+
+
 
     private Message generateValidMessage(){
         Message message = new Message(phoneNumber);
@@ -49,32 +50,30 @@ public class MessageTest {
         message.setTag(tag);
         message.setCallBackUrl(callbackUrl);
 
-        ChannelPush push = new ChannelPush(pushText, pushTtl);
+        ChannelPush push = new ChannelPush(pushTtl);
+        push.setText(pushText);
         push.setImageUrl(pushImgUrl);
         push.setButton(pushActionUrl, pushCaption);
 
-        ChannelViber viber = new ChannelViber(viberText, viberTtl);
+        ChannelViber viber = new ChannelViber(viberTtl);
+        viber.setText(viberText);
         viber.setImageUrl(viberImgUrl);
         viber.setButton(viberActionUrl, viberCaption);
         viber.setIosExpirityText(viberIosExpirityText);
 
-        ChannelSms sms = new ChannelSms(smsText, smsTtl);
+        ChannelSms sms = new ChannelSms(smsTtl, smsText, alphaName);
 
         Channel[] channels = new Channel[]{push, viber, sms};
         message.setChannels(channels);
         return message;
     }
 
-    private void testTexts(JSONObject actual) {
-        JSONArray actualTexts = actual.getJSONArray("texts");
-        assertEquals(pushText, actualTexts.get(0));
-        assertEquals(viberText, actualTexts.get(1));
-        assertEquals(smsText, actualTexts.get(2));
-    }
 
     private void testViberOptions(JSONObject actualChannelOptions) {
         JSONObject actualViberOptions = actualChannelOptions.getJSONObject("viber");
         assertEquals(viberIosExpirityText, actualViberOptions.getString("ios_expirity_text"));
+        assertEquals(viberTtl, actualViberOptions.getInt("ttl"));
+        assertEquals(viberText, actualViberOptions.getString("text"));
         assertEquals(viberActionUrl, actualViberOptions.getString("action"));
         assertEquals(viberCaption, actualViberOptions.getString("caption"));
         assertEquals(viberImgUrl, actualViberOptions.getString("img"));
@@ -83,23 +82,30 @@ public class MessageTest {
 
     private void testPushOptions(JSONObject actualChannelOptions) {
         JSONObject actualPushOptions = actualChannelOptions.getJSONObject("push");
+        assertEquals(pushTtl, actualPushOptions.getInt("ttl"));
+        assertEquals(pushText, actualPushOptions.getString("text"));
         assertEquals(pushActionUrl, actualPushOptions.getString("action"));
         assertEquals(pushCaption, actualPushOptions.getString("caption"));
         assertEquals(pushImgUrl, actualPushOptions.getString("img"));
 
     }
+
+    private void testSmsOptions(JSONObject actualChannelOptions) {
+        JSONObject actualSmsOptions = actualChannelOptions.getJSONObject("sms");
+        assertEquals(smsText, actualSmsOptions.getString("text"));
+        assertEquals(smsTtl, actualSmsOptions.getInt("ttl"));
+        assertEquals(alphaName, actualSmsOptions.getString("alpha_name"));
+    }
+
     private void testChannels(JSONArray actualOrder){
-        JSONObject actualPushJSON = (JSONObject) actualOrder.get(0);
-        assertEquals(pushName, actualPushJSON.getString("channel"));
-        assertEquals(pushTtl, actualPushJSON.getInt("ttl"));
+        String actualPushJSON = (String) actualOrder.get(0);
+        assertEquals(pushName, actualPushJSON);
 
-        JSONObject actualViberJSON = (JSONObject) actualOrder.get(1);
-        assertEquals(viberName, actualViberJSON.getString("channel"));
-        assertEquals(viberTtl, actualViberJSON.getInt("ttl"));
+        String actualViberJSON = (String) actualOrder.get(1);
+        assertEquals(viberName, actualViberJSON);
 
-        JSONObject smsJSON = (JSONObject) actualOrder.get(2);
-        assertEquals(smsName, smsJSON.getString("channel"));
-        assertEquals(smsTtl, smsJSON.getInt("ttl"));
+        String smsJSON = (String) actualOrder.get(2);
+        assertEquals(smsName, smsJSON);
     }
 
     private void testNonRequiredFields(JSONObject actual){

@@ -11,14 +11,14 @@ public class SenderTest {
 
     @Test
     public void checkDefaultTimeouts() {
-        HttpSender httpSender = new MessageSender(login, password, identifier, alphaName);
+        HttpSender httpSender = new MessageSender(login, password, identifier);
         assertEquals((Integer) 60, httpSender.getConnectionTimeout());
         assertEquals((Integer) 60, httpSender.getReadTimeout());
     }
 
     @Test
     public void checkSetTimeouts() {
-        HttpSender httpSender = new MessageSender(login, password, identifier, alphaName);
+        HttpSender httpSender = new MessageSender(login, password, identifier);
         httpSender.setReadTimeout(120);
         httpSender.setConnectionTimeout(120);
         assertEquals((Integer) 120, httpSender.getConnectionTimeout());

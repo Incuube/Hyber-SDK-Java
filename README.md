@@ -14,25 +14,24 @@ All this parameters are mandatory. They are provided for each Hyber customer and
 String login = "test";
 String password = "pass";
 int identifier = 5;
-String alphaName = "name";
-HttpSender sender = new MessageSender(login, password, identifier, alphaName);
+HttpSender sender = new MessageSender(login, password, identifier);
 ```
 
 You may specify some addition sender parameters, however they are not mandatory
 ```java
-int seconds = 60;
+int timeout = 60;
 
 //connection timeout, default is 60
-sender.setConnectionTimeout(seconds);
+sender.setConnectionTimeout(timeout);
 
 //read timeout, default is 60
-sender.setReadTimeout(seconds);       
+sender.setReadTimeout(timeout);       
 ```
 
 Build message that will sent to Hyber
 Message have mandatory and optional fields
 
-- Create message with phone and text (mandatory)
+- Create message with phone (mandatory)
 ```java
 long phonenumber = 380000000000L;
 Message message = new Message(phonenumber);
@@ -63,12 +62,11 @@ message.setStartTime(startTime);
 ```
 
 You may add whatever available channels you want, however if specific channel is not enabled for you,
-there will be no delivery via this channel.
+there will be no delivery via this channel. If sms channel is present, it must be last in chain.
 
-For each channel mandatory parameters are text for this channel and TTL
+For each channel mandatory parameter is TTL
 (time-to-live, how long we try to send message via this channel before considering it expired)
 Channels will be used in same order you added them.
-
 
 Create specific message for partner push
 ```java
@@ -87,16 +85,24 @@ String actionUrl = "http://google.com";
 //text on button    
 String caption =  "go to google";           
  
+//title of push message
+ String title = "HyberClient"
+ 
 //mandatory 
-ChannelPush channelPush = new ChannelPush(pushText, pushTtlSeconds); 
+ChannelPush channelPush = new ChannelPush(pushTtlSeconds); 
+
+//optional for push
+channelPush.setText(pushText);
 
 //optional, url for image that will displayed in push message
 channelPush.setImageUrl(imageUrl);       
     
 //optional, button in message that will displayed in push message    
-channelPush.setButton(actionUrl, caption);   
+channelPush.setButton(actionUrl, caption);  
+ 
+//optional, title of message
+channelPush.setTitle(title);
 ```
-
 Create specific message for partner viber
 ```java
 //time to wait before send to next partner
@@ -118,7 +124,10 @@ String actionUrl = "http://google.com";
 String caption =  "go to google";                     
 
 //mandatory
-ChannelViber channelViber = new ChannelViber(viberText, viberTtlSeconds); 
+ChannelViber channelViber = new ChannelViber(viberTtlSeconds); 
+
+//optional
+channelViber.setText(viberText);
 
 //optional, can be set only with button
 channelViber.setImageUrl(imageUrl);                    
@@ -134,7 +143,8 @@ Create specific channel for partner sms
 ```java
 int smsTtlSeconds = 15;
 String smsText = "text for sms message";
-ChannelSms channelSms = new ChannelSms(smsText, smsTtlSeconds); //mandatory
+String alphaName = "HyberClient";
+ChannelSms channelSms = new ChannelSms(smsText, smsTtlSeconds, alphaName); //mandatory
 ```
 
 Build channels order

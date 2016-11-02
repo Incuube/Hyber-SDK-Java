@@ -9,8 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.hyber.ValidTestMessageFields.smsName;
-
 public class ValidationTest {
 
     @Rule
@@ -40,23 +38,10 @@ public class ValidationTest {
     }
 
     @Test()
-    public void failWithoutChannelText() throws InvalidRequestException {
-
-        Message msg = new Message(380661111111L);
-        Channel[] channels = new Channel[]{new ChannelSms(null, 15)};
-        msg.setChannels(channels);
-
-        expectedEx.expect(InvalidRequestException.class);
-        expectedEx.expectMessage(String.format(ValidationErrors.CHANNEL_TEXT_IS_NULL.getText(), smsName));
-
-        msg.validate();
-    }
-
-    @Test()
     public void failWithNegativeTtl() throws InvalidRequestException {
 
         Message msg = new Message(380661111111L);
-        Channel[] channels = new Channel[]{new ChannelSms("Sms text", -1)};
+        Channel[] channels = new Channel[]{new ChannelSms(-1, "text", "alpha name")};
         msg.setChannels(channels);
 
         expectedEx.expect(InvalidRequestException.class);

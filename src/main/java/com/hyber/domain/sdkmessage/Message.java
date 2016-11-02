@@ -1,12 +1,7 @@
 package com.hyber.domain.sdkmessage;
 
 import com.hyber.constants.Partners;
-import com.hyber.domain.hyberrequest.JsonChannel;
-import com.hyber.domain.hyberrequest.PushOptions;
-import com.hyber.domain.hyberrequest.ViberOptions;
 import com.hyber.domain.sdkmessage.channel.Channel;
-import com.hyber.domain.sdkmessage.channel.ChannelPush;
-import com.hyber.domain.sdkmessage.channel.ChannelViber;
 import com.hyber.exception.InvalidRequestException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,8 +11,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.hyber.constants.Partners.push;
-import static com.hyber.constants.Partners.viber;
 import static com.hyber.constants.jsonfields.RequestFields.*;
 import static com.hyber.exception.ValidationErrors.*;
 
@@ -30,7 +23,6 @@ public class Message {
     private Boolean isPromotional;
     private Long startTime;
     private Channel[] channels;
-
 
     public Message(long phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -88,22 +80,9 @@ public class Message {
         this.channels = channels;
     }
 
-    private String[] getTexts() throws InvalidRequestException {
-        if (channels == null){
-            throw new InvalidRequestException(CHANNELS_IS_EMPTY.getText());
-        }
-        String[] texts = new String[channels.length];
-        for (int i = 0; i < channels.length; i++) {
-            texts[i] = channels[i].getText();
-        }
-        return texts;
-    }
-
-    public JSONObject toJson(String alphaName) throws InvalidRequestException {
+    public JSONObject toJson() throws InvalidRequestException {
         JSONObject result = new JSONObject();
         result.put(PHONE_NUMBER, this.phoneNumber);
-        result.put(TEXTS, getTexts());
-        result.put(ALPHA_NAME, alphaName);
         if (callBackUrl != null) {
             result.put(CALLBACK_URL, callBackUrl);
         }
@@ -129,43 +108,19 @@ public class Message {
 
     private void setChannelOptions(JSONObject result, Channel[] order) {
 
-        ViberOptions viberOptions = null;
-        PushOptions pushOptions = null;
-        for (Channel channel : order) {
-            switch (channel.getChannelName()) {
-                case viber:
-                    viberOptions = ViberOptions.of((ChannelViber) channel);
-                    break;
-                case push:
-                    pushOptions = PushOptions.of((ChannelPush) channel);
-                    break;
-                default:
-                    break;
-            }
-        }
         JSONObject channelOptionsJson = new JSONObject();
-        boolean channelsOptionsExists = false;
-        if (viberOptions != null) {
-            channelOptionsJson.put(viber.name(), viberOptions.toJson());
-            channelsOptionsExists = true;
+        for (Channel channel : order) {
+            channelOptionsJson.put(channel.getChannel().name(), channel.toJson());
         }
-        if (pushOptions != null) {
-            channelOptionsJson.put(push.name(), pushOptions.toJson());
-            channelsOptionsExists = true;
-        }
-        if (channelsOptionsExists) {
-            result.put(CHANNEL_OPTIONS, channelOptionsJson);
-        }
-
-
+        result.put(CHANNEL_OPTIONS, channelOptionsJson);
     }
 
     private JSONArray getJsonChannels() {
-        JSONObject[] jsonChannels = new JSONObject[this.channels.length];
+        String[] partners = new String[this.channels.length];
         for (int i = 0; i < this.channels.length; i++) {
-            jsonChannels[i] = new JSONObject(new JsonChannel(this.channels[i].getChannelName().name(), this.channels[i].getTtl()));
+            partners[i]= this.channels[i].getChannel().name();
         }
-        return new JSONArray(jsonChannels);
+        return new JSONArray(partners);
     }
 
     public void validate() throws InvalidRequestException {
@@ -177,13 +132,10 @@ public class Message {
             throw new InvalidRequestException(CHANNELS_IS_EMPTY.getText());
         }
         for (Channel channel : channels) {
-            if (channel.getText() == null) {
-                throw new InvalidRequestException(String.format(CHANNEL_TEXT_IS_NULL.getText(), channel.getChannelName()));
-            }
             if (channel.getTtl() <= 0)
                 throw new InvalidRequestException(TTL_NOT_A_POSITIVE_NUMBER.getText());
 
-            uniqueChannels.add(channel.getChannelName());
+            uniqueChannels.add(channel.getChannel());
         }
         if (uniqueChannels.size() < channels.length) {
             throw new InvalidRequestException(NOT_UNIQUE_CHANNELS.getText());

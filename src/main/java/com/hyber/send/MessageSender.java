@@ -19,13 +19,11 @@ public class MessageSender extends HttpSender {
     private String login;
     private String password;
     private Integer identifier;
-    private String alphaName;
 
-    public MessageSender(String login, String password, int identifier, String alphaName) {
+    public MessageSender(String login, String password, int identifier) {
         this.login = login;
         this.password = password;
         this.identifier = identifier;
-        this.alphaName = alphaName;
     }
 
     public String getLogin() {
@@ -40,15 +38,11 @@ public class MessageSender extends HttpSender {
         return identifier;
     }
 
-    public String getAlphaName() {
-        return alphaName;
-    }
-
     @Override
     public Response send(Message message) throws Exception {
         message.validate();
         String url = String.format(getUrlPattern(), identifier);
-        String body = message.toJson(alphaName).toString();
+        String body = message.toJson().toString();
         System.out.println(body);
         return post(url, body, login, password, "application/json", getConnectionTimeout(), getReadTimeout());
     }
