@@ -5,8 +5,8 @@ public abstract class MessengerChannel extends Channel {
     private String imageUrl;
     private Button button;
 
-    public MessengerChannel(String text, int ttl) {
-        super(text, ttl);
+    public MessengerChannel(int ttl) {
+        super(ttl);
     }
 
     public String getImageUrl() {

@@ -11,6 +11,7 @@ public  final class ValidTestMessageFields {
     protected final static int smsTtl = 15;
     protected final static String smsText = "Sms text";
     protected final static String smsName = "sms";
+    protected final static String alphaName = "TEST";
 
     protected final static int viberTtl = 15;
     protected final static String viberText = "Viber text";
