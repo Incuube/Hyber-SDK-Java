@@ -25,19 +25,19 @@ public abstract class Response {
         return errorCode;
     }
 
-    public void setMessageId(Long messageId) {
+    void setMessageId(Long messageId) {
         this.messageId = messageId;
     }
 
-    public void setHttpCode(Integer httpCode) {
+    void setHttpCode(Integer httpCode) {
         this.httpCode = httpCode;
     }
 
-    public void setErrorText(String errorText) {
+    void setErrorText(String errorText) {
         this.errorText = errorText;
     }
 
-    public void setErrorCode(Integer errorCode) {
+    void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
     }
 }

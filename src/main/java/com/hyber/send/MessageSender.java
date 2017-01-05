@@ -1,21 +1,22 @@
 package com.hyber.send;
 
-import com.hyber.domain.sdkmessage.Message;
+import com.hyber.constants.HyberConstants;
+import com.hyber.domain.Message;
 import org.json.JSONObject;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 
 import static com.hyber.constants.jsonfields.ErrorResponseFields.ERROR_CODE;
 import static com.hyber.constants.jsonfields.ErrorResponseFields.ERROR_TEXT;
 import static com.hyber.constants.jsonfields.SuccessResponseFields.MESSAGE_ID;
 
-public class MessageSender extends HttpSender {
+public final class MessageSender implements Sender {
 
+    private String urlPattern = HyberConstants.URL_PATTERN;
+    private Integer connectionTimeoutSec = HyberConstants.DEFAULT_CONNECTION_TIMEOUT_SEC;
+    private Integer readTimeoutSec = HyberConstants.DEFAULT_READ_TIMEOUT_SEC;
     private String login;
     private String password;
     private Integer identifier;
@@ -26,40 +27,46 @@ public class MessageSender extends HttpSender {
         this.identifier = identifier;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Integer getIdentifier() {
-        return identifier;
+    @Override
+    public Response send(Message message) throws Exception {
+        String url = String.format(urlPattern, identifier);
+        String body = message.toString();
+        return post(url, body, login, password, connectionTimeoutSec, readTimeoutSec, true);
     }
 
     @Override
-    public Response send(Message message) throws Exception {
-        message.validate();
-        String url = String.format(getUrlPattern(), identifier);
-        String body = message.toJson().toString();
-        System.out.println(body);
-        return post(url, body, login, password, "application/json", getConnectionTimeout(), getReadTimeout());
+    public Response send(Message message, boolean closeConnectionAfterSend) throws Exception {
+        String url = String.format(urlPattern, identifier);
+        String body = message.toString();
+        return post(url, body, login, password, connectionTimeoutSec, readTimeoutSec, closeConnectionAfterSend);
     }
 
-    private Response post(String url, String body, String login, String password, String contentType, int connectionTimeout, int readTimeout) throws Exception {
+    private Response post(String url, String body, String login, String password, int connectionTimeout, int readTimeout, boolean closeConnection) throws Exception {
 
         HttpURLConnection connection = null;
         try {
             URI uri = new URI(url);
-            connection = createConnection(uri.toURL(), contentType);
+            connection = createConnection(uri.toURL());
             setTimeOut(connection, connectionTimeout, readTimeout);
             setAuth(connection, login, password);
             sendHttp(connection.getOutputStream(), body);
             return getResponse(connection);
+        } catch (Exception e) {
+            return getErrorsResponse(e);
         } finally {
             if (connection != null) {
-                connection.disconnect();
+                if (closeConnection) {
+                    connection.disconnect();
+                } else {
+                    try {
+                        connection.getInputStream().close();
+                    } catch (Exception ignored) {
+                    }
+                    try {
+                        connection.getErrorStream().close();
+                    } catch (Exception ignored) {
+                    }
+                }
             }
         }
 
@@ -79,12 +86,12 @@ public class MessageSender extends HttpSender {
         connection.setReadTimeout(readTimeout * 1000);
     }
 
-    private static HttpURLConnection createConnection(URL url, String contentType) throws IOException {
+    private static HttpURLConnection createConnection(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoInput(true);
         connection.setDoOutput(true);
         connection.setUseCaches(false);
-        connection.setRequestProperty("Content-Type", contentType);
+        connection.setRequestProperty("Content-Type", "application/json");
         return connection;
 
     }
@@ -100,12 +107,13 @@ public class MessageSender extends HttpSender {
         Response response;
         int responseCode;
         responseCode = connection.getResponseCode();
-        JSONObject answer = new JSONObject(getResponseBody(connection.getInputStream()));
         if (responseCode == HttpURLConnection.HTTP_OK) {
+            JSONObject answer = new JSONObject(getResponseBody(connection.getInputStream()));
             response = new SuccessResponse();
             Long messageId = answer.getLong(MESSAGE_ID);
             response.setMessageId(messageId);
         } else {
+            JSONObject answer = new JSONObject(getResponseBody(connection.getErrorStream()));
             response = new ErrorResponse();
             response.setHttpCode(responseCode);
             response.setErrorCode(answer.getInt(ERROR_CODE));
@@ -125,4 +133,52 @@ public class MessageSender extends HttpSender {
         return sb.toString();
     }
 
+    private static Response getErrorsResponse(Exception e) {
+        Response response = new ErrorResponse();
+        if (e instanceof SocketTimeoutException) {
+            response.setErrorCode(HttpURLConnection.HTTP_CLIENT_TIMEOUT);
+            response.setErrorText(e.getMessage());
+        } else {
+            response.setErrorCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            response.setErrorText(e.getMessage());
+        }
+        return response;
+    }
+
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Integer getIdentifier() {
+        return identifier;
+    }
+
+    public String getUrlPattern() {
+        return urlPattern;
+    }
+
+    public void setUrlPattern(String urlPattern) {
+        this.urlPattern = urlPattern;
+    }
+
+    public Integer getConnectionTimeoutSec() {
+        return connectionTimeoutSec;
+    }
+
+    public void setConnectionTimeoutSec(Integer connectionTimeoutSec) {
+        this.connectionTimeoutSec = connectionTimeoutSec;
+    }
+
+    public Integer getReadTimeoutSec() {
+        return readTimeoutSec;
+    }
+
+    public void setReadTimeoutSec(Integer readTimeoutSec) {
+        this.readTimeoutSec = readTimeoutSec;
+    }
 }

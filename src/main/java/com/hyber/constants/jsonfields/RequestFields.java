@@ -19,6 +19,7 @@ public final class RequestFields {
   public final static String  IMG = "img";
   public final static String  PUSH_TITLE = "title";
 
-
+  private RequestFields() {
+  }
 }
 

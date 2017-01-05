@@ -1,18 +1,19 @@
 package com.hyber;
 
-import com.hyber.domain.sdkmessage.*;
-import com.hyber.domain.sdkmessage.channel.Channel;
-import com.hyber.domain.sdkmessage.channel.ChannelPush;
-import com.hyber.domain.sdkmessage.channel.ChannelSms;
-import com.hyber.domain.sdkmessage.channel.ChannelViber;
-import com.hyber.exception.InvalidRequestException;
+import com.hyber.domain.Message;
+import com.hyber.send.MessageSender;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import static com.hyber.ValidTestMessageFields.*;
-import static com.hyber.ValidTestSenderFields.*;
+import static com.hyber.ValidTestSenderFields.identifier;
+import static com.hyber.ValidTestSenderFields.login;
+import static com.hyber.ValidTestSenderFields.password;
+import static com.hyber.domain.Partners.*;
 import static org.junit.Assert.assertEquals;
 
 public class MessageTest {
@@ -20,15 +21,16 @@ public class MessageTest {
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Test
-    public void checkConvertToJson() throws ParseException, InvalidRequestException {
-        Message msg = generateValidMessage();
+    public void checkConvertToJson() throws ParseException {
+
         long startTime = getStartTime();
-        msg.setStartTime(startTime);
-        String request = msg.toJson().toString();
+        Message msg = generateValidMessage(startTime);
+
+        String request = msg.toString();
         System.out.println(request);
         JSONObject actual = new JSONObject(request);
         assertEquals(startTime, sdf.parse(actual.getString("start_time")).getTime() / 1000);
-        assertEquals(phoneNumber, (Long) actual.getLong("phone_number"));
+        assertEquals(phoneNumber, actual.getString("phone_number"));
 
         testNonRequiredFields(actual);
         JSONArray actualOrder = actual.getJSONArray("channels");
@@ -40,32 +42,37 @@ public class MessageTest {
         testPushOptions(actualChannelOptions);
     }
 
-
-
-    private Message generateValidMessage(){
-        Message message = new Message(phoneNumber);
-        message.setExtraId(extraId);
-        message.setIsPromotional(promotional);
-
-        message.setTag(tag);
-        message.setCallBackUrl(callbackUrl);
-
-        ChannelPush push = new ChannelPush(pushTtl);
-        push.setText(pushText);
-        push.setImageUrl(pushImgUrl);
-        push.setButton(pushActionUrl, pushCaption);
-
-        ChannelViber viber = new ChannelViber(viberTtl);
-        viber.setText(viberText);
-        viber.setImageUrl(viberImgUrl);
-        viber.setButton(viberActionUrl, viberCaption);
-        viber.setIosExpirityText(viberIosExpirityText);
-
-        ChannelSms sms = new ChannelSms(smsTtl, smsText, alphaName);
-
-        Channel[] channels = new Channel[]{push, viber, sms};
-        message.setChannels(channels);
-        return message;
+    private Message generateValidMessage(long startTime) {
+        return Message.builder()
+                .phoneNumber(phoneNumber)
+                .extraId(extraId)
+                .promotional(promotional)
+                .tag(tag)
+                .callbackUrl(callbackUrl)
+                .channels(push, viber, sms)
+                .startTime(startTime)
+                .push()
+                .ttl(pushTtl)
+                .text(pushText)
+                .img(pushImgUrl)
+                .action(pushActionUrl)
+                .caption(pushCaption)
+                .title(pushTitle)
+                .end()
+                .viber()
+                .ttl(viberTtl)
+                .text(viberText)
+                .img(viberImgUrl)
+                .action(viberActionUrl)
+                .caption(viberCaption)
+                .iosExpirityText(viberIosExpirityText)
+                .end()
+                .sms()
+                .text(smsText)
+                .alphaName(alphaName)
+                .ttl(smsTtl)
+                .end()
+                .build();
     }
 
 
@@ -86,6 +93,7 @@ public class MessageTest {
         assertEquals(pushText, actualPushOptions.getString("text"));
         assertEquals(pushActionUrl, actualPushOptions.getString("action"));
         assertEquals(pushCaption, actualPushOptions.getString("caption"));
+        assertEquals(pushTitle, actualPushOptions.getString("title"));
         assertEquals(pushImgUrl, actualPushOptions.getString("img"));
 
     }
@@ -97,7 +105,7 @@ public class MessageTest {
         assertEquals(alphaName, actualSmsOptions.getString("alpha_name"));
     }
 
-    private void testChannels(JSONArray actualOrder){
+    private void testChannels(JSONArray actualOrder) {
         String actualPushJSON = (String) actualOrder.get(0);
         assertEquals(pushName, actualPushJSON);
 
@@ -108,15 +116,13 @@ public class MessageTest {
         assertEquals(smsName, smsJSON);
     }
 
-    private void testNonRequiredFields(JSONObject actual){
+    private void testNonRequiredFields(JSONObject actual) {
         assertEquals(extraId, actual.getString("extra_id"));
         assertEquals(promotional, actual.getBoolean("is_promotional"));
-
         assertEquals(tag, actual.get("tag"));
         assertEquals(callbackUrl, actual.get("callback_url"));
 
     }
-
 
 
 }

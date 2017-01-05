@@ -1,10 +1,10 @@
 package com.hyber;
 
-public final class ValidTestSenderFields {
+final class ValidTestSenderFields {
 
-    protected final static String login = "login";
-    protected final static String password = "password";
-    protected final static int identifier = 1;
+    final static String login = "login";
+    final static String password = "password";
+    final static int identifier = 1;
 
 
     private ValidTestSenderFields(){
