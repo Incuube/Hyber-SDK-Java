@@ -1,4 +1,4 @@
-package com.hyber.send;
+package com.hyber.sdk.send;
 
 public abstract class Response {
 

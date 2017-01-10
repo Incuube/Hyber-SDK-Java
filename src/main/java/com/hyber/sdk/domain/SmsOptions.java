@@ -1,8 +1,10 @@
-package com.hyber.domain;
+package com.hyber.sdk.domain;
 
 import org.json.JSONObject;
 
-import static com.hyber.constants.jsonfields.RequestFields.*;
+import static com.hyber.sdk.constants.jsonfields.RequestFields.ALPHA_NAME;
+import static com.hyber.sdk.constants.jsonfields.RequestFields.TEXT;
+import static com.hyber.sdk.constants.jsonfields.RequestFields.TTL;
 
 final class SmsOptions {
 

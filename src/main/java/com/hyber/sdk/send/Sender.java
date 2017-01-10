@@ -1,6 +1,6 @@
-package com.hyber.send;
+package com.hyber.sdk.send;
 
-import com.hyber.domain.Message;
+import com.hyber.sdk.domain.Message;
 
 public interface Sender {
 

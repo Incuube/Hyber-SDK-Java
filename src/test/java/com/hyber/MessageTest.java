@@ -1,7 +1,6 @@
 package com.hyber;
 
-import com.hyber.domain.Message;
-import com.hyber.send.MessageSender;
+import com.hyber.sdk.domain.Message;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -10,10 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import static com.hyber.ValidTestMessageFields.*;
-import static com.hyber.ValidTestSenderFields.identifier;
-import static com.hyber.ValidTestSenderFields.login;
-import static com.hyber.ValidTestSenderFields.password;
-import static com.hyber.domain.Partners.*;
+import static com.hyber.sdk.domain.Partners.*;
 import static org.junit.Assert.assertEquals;
 
 public class MessageTest {

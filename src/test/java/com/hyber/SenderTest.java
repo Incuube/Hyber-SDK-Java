@@ -1,6 +1,6 @@
 package com.hyber;
 
-import com.hyber.send.MessageSender;
+import com.hyber.sdk.send.MessageSender;
 import org.junit.Test;
 
 import javax.xml.bind.DatatypeConverter;

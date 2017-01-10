@@ -1,16 +1,14 @@
-package com.hyber.send;
+package com.hyber.sdk.send;
 
-import com.hyber.constants.HyberConstants;
-import com.hyber.domain.Message;
+import com.hyber.sdk.constants.HyberConstants;
+import com.hyber.sdk.domain.Message;
+import com.hyber.sdk.constants.jsonfields.ErrorResponseFields;
+import com.hyber.sdk.constants.jsonfields.SuccessResponseFields;
 import org.json.JSONObject;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.net.*;
-
-import static com.hyber.constants.jsonfields.ErrorResponseFields.ERROR_CODE;
-import static com.hyber.constants.jsonfields.ErrorResponseFields.ERROR_TEXT;
-import static com.hyber.constants.jsonfields.SuccessResponseFields.MESSAGE_ID;
 
 public final class MessageSender implements Sender {
 
@@ -110,14 +108,14 @@ public final class MessageSender implements Sender {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             JSONObject answer = new JSONObject(getResponseBody(connection.getInputStream()));
             response = new SuccessResponse();
-            Long messageId = answer.getLong(MESSAGE_ID);
+            Long messageId = answer.getLong(SuccessResponseFields.MESSAGE_ID);
             response.setMessageId(messageId);
         } else {
             JSONObject answer = new JSONObject(getResponseBody(connection.getErrorStream()));
             response = new ErrorResponse();
             response.setHttpCode(responseCode);
-            response.setErrorCode(answer.getInt(ERROR_CODE));
-            response.setErrorText(answer.getString(ERROR_TEXT));
+            response.setErrorCode(answer.getInt(ErrorResponseFields.ERROR_CODE));
+            response.setErrorText(answer.getString(ErrorResponseFields.ERROR_TEXT));
         }
 
         return response;

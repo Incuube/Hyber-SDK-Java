@@ -1,4 +1,4 @@
-package com.hyber.constants.jsonfields;
+package com.hyber.sdk.constants.jsonfields;
 
 public final class RequestFields {
 
