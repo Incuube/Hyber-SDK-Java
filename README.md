@@ -29,130 +29,38 @@ sender.setReadTimeout(timeout);
 ```
 
 Build message that will sent to Hyber
-Message have mandatory and optional fields
-
-- Create message with phone (mandatory)
 ```java
-long phonenumber = 380000000000L;
-Message message = new Message(phonenumber);
-```
+Message message = Message.builder()
+                .phoneNumber("3800000000") //mandatory, String 
+                .extraId("Extra id") //optional, String
+                .promotional(false) // optional, boolean
+                .tag("Some tag") // optional 
+                .callbackUrl("http://callbackurl.com") //optional, String
+                .channels(push, viber, sms) //mandatory, Partners enum values,
+                .startTime(startTime) //time to start send message, in millis, UNIX format 
+                .push() //start buliding options of push channel
+                    .ttl(15) //mandatory, time to wait before send to next partner,in sec, Integer
+                    .text("Some text for push") //optional, String
+                    .img("http://localhost.com/push/img/img.jpg") //optional, String, valid URL
+                    .action("http://localhost.com/push/action")//optional, String, valid URL
+                    .caption("Push caption") //optional, String, text pon button
+                    .title("Push title") //optional, String
+                    .end()
+                .viber()
+                    .ttl(15) //mandatory, time to wait before send to next partner,in sec, Integer
+                    .text("Viber text") //optional, String
+                    .img("http://localhost.com/viber/img/img.jpg") //optional, String, valid URL
+                    .action("http://localhost.com/viber/action")//optional, String, valid URL
+                    .caption("Viber caption") //optional, String, text pon button
+                    .iosExpirityText("Viber ios expirity text"), optional, String
+                    .end()
+                .sms()
+                    .text("Some text for SMS") //mandatory for sms, String
+                    .alphaName("Alpha name") //mandatory, String
+                    .ttl(15) //mandatory, Integer
+                    .end()
+                .build();
 
-Optional parameters
-```java
-String url = "http://test.com";
-String extraId = "ae6912895ff768da44";
-String tag = "testTag";
-boolean promotional = false;
-long startTime = 1473767710;
-
-//url where Hyber platform will send delivery report
-message.setCallBackUrl(url);           
-
-//some identifier from external system
-message.setExtraId(extraId);            
-
-//on Hyber portal you can filter statistics by tag
-message.setTag(tag);                    
-
-//whether or not your message is promotional (advertising)
-message.setIsPromotional(promotional);  
-
-//time to start send message, in seconds, UNIX format
-message.setStartTime(startTime);        
-```
-
-You may add whatever available channels you want, however if specific channel is not enabled for you,
-there will be no delivery via this channel. If sms channel is present, it must be last in chain.
-
-For each channel mandatory parameter is TTL
-(time-to-live, how long we try to send message via this channel before considering it expired)
-Channels will be used in same order you added them.
-
-Create specific message for partner push
-```java
-//time to wait before send to next partner
-int pushTtlSeconds = 15;
-
-//text for push message
-String pushText = "text for push message";   
-
-//link to image in push message
-String imageUrl = "http://test.img.com";   
-
-//path to go on button press  
-String actionUrl = "http://google.com";  
-
-//text on button    
-String caption =  "go to google";           
- 
-//title of push message
- String title = "HyberClient"
- 
-//mandatory 
-ChannelPush channelPush = new ChannelPush(pushTtlSeconds); 
-
-//optional for push
-channelPush.setText(pushText);
-
-//optional, url for image that will displayed in push message
-channelPush.setImageUrl(imageUrl);       
-    
-//optional, button in message that will displayed in push message    
-channelPush.setButton(actionUrl, caption);  
- 
-//optional, title of message
-channelPush.setTitle(title);
-```
-Create specific message for partner viber
-```java
-//time to wait before send to next partner
-int viberTtlSeconds = 15;                             
-
-//text for viber message
-String viberText = "text for viber message";           
-
-//text for IoS if message delivered after ttl expirity
-String iosExpirityText = "text for viber ios devices"; 
-
-//link to image in viber message
-String imageUrl = "http://test.img.com";               
-
-//path to go on button press
-String actionUrl = "http://google.com";                
-
-//text on button
-String caption =  "go to google";                     
-
-//mandatory
-ChannelViber channelViber = new ChannelViber(viberTtlSeconds); 
-
-//optional
-channelViber.setText(viberText);
-
-//optional, can be set only with button
-channelViber.setImageUrl(imageUrl);                    
-
-//optional, set the button in message
-channelViber.setButton(actionUrl, caption);            
-
-//optional, set the expirity text for ios devices
-channelViber.setIosExpirityText(iosExpirityText);      
-```
-
-Create specific channel for partner sms
-```java
-int smsTtlSeconds = 15;
-String smsText = "text for sms message";
-String alphaName = "HyberClient";
-ChannelSms channelSms = new ChannelSms(smsText, smsTtlSeconds, alphaName); //mandatory
-```
-
-Build channels order
-```java
-//mandatory, order from left to right direction (left is first partner, right is last)
-Channel[] channels = new Channel[]{channelPush, channelViber, channelSms}; 
-
-message.setChannels(channels); 
 ```
 
 ## Send message
@@ -173,13 +81,4 @@ if (response instanceof SuccessResponse) {
     System.out.println("errorText=" + response.getErrorText());
 }
 ```
-
-However, if the message was not sent at all - you will receive Exception
-
-#### Exceptions
-
-| Name                                        | Description               |
-|---------------------------------------------|---------------------------|
-| com.hyber.exception.InvalidRequestException | Not correct data was used |
-| Exception                                   | Any other exception, except not correct data|
 

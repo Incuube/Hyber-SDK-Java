@@ -132,7 +132,7 @@ public final class Message {
         result.put(RequestFields.EXTRA_ID, extraId);
 
         if (startTime != null) {
-            Date startTimeDate = new Date(startTime * 1000);
+            Date startTimeDate = new Date(startTime);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             result.put(RequestFields.START_TIME, sdf.format(startTimeDate));
         }
