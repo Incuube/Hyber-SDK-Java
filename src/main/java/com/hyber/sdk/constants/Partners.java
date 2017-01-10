@@ -1,4 +1,4 @@
-package com.hyber.constants;
+package com.hyber.sdk.constants;
 
 public enum Partners {
 

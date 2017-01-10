@@ -1,4 +1,4 @@
-package com.hyber.domain;
+package com.hyber.sdk.domain;
 
 public enum Partners {
 	sms,

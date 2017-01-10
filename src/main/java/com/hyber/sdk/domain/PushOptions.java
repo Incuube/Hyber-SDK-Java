@@ -1,8 +1,7 @@
-package com.hyber.domain;
+package com.hyber.sdk.domain;
 
+import com.hyber.sdk.constants.jsonfields.RequestFields;
 import org.json.JSONObject;
-
-import static com.hyber.constants.jsonfields.RequestFields.*;
 
 final class PushOptions {
 
@@ -24,12 +23,12 @@ final class PushOptions {
 
     JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(TTL, ttl);
-        jsonObject.put(TEXT, text);
-        jsonObject.put(ACTION, action);
-        jsonObject.put(CAPTION, caption);
-        jsonObject.put(IMG, img);
-        jsonObject.put(PUSH_TITLE, title);
+        jsonObject.put(RequestFields.TTL, ttl);
+        jsonObject.put(RequestFields.TEXT, text);
+        jsonObject.put(RequestFields.ACTION, action);
+        jsonObject.put(RequestFields.CAPTION, caption);
+        jsonObject.put(RequestFields.IMG, img);
+        jsonObject.put(RequestFields.PUSH_TITLE, title);
         return jsonObject;
     }
 

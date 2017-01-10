@@ -1,5 +1,6 @@
-package com.hyber.domain;
+package com.hyber.sdk.domain;
 
+import com.hyber.sdk.constants.jsonfields.RequestFields;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -7,8 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import static com.hyber.constants.jsonfields.RequestFields.*;
 
 public final class Message {
 
@@ -126,19 +125,19 @@ public final class Message {
     @Override
     public String toString() {
         JSONObject result = new JSONObject();
-        result.put(PHONE_NUMBER, this.phoneNumber);
-        result.put(CALLBACK_URL, callbackUrl);
-        result.put(TAG, tag);
-        result.put(IS_PROMOTIONAL, promotional);
-        result.put(EXTRA_ID, extraId);
+        result.put(RequestFields.PHONE_NUMBER, this.phoneNumber);
+        result.put(RequestFields.CALLBACK_URL, callbackUrl);
+        result.put(RequestFields.TAG, tag);
+        result.put(RequestFields.IS_PROMOTIONAL, promotional);
+        result.put(RequestFields.EXTRA_ID, extraId);
 
         if (startTime != null) {
             Date startTimeDate = new Date(startTime * 1000);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            result.put(START_TIME, sdf.format(startTimeDate));
+            result.put(RequestFields.START_TIME, sdf.format(startTimeDate));
         }
         if (channels != null) {
-            result.put(CHANNELS, getJsonChannels());
+            result.put(RequestFields.CHANNELS, getJsonChannels());
             setChannelOptions(result, channels);
         }
         return result.toString();
@@ -167,7 +166,7 @@ public final class Message {
                     break;
             }
         }
-        result.put(CHANNEL_OPTIONS, channelOptionsJson);
+        result.put(RequestFields.CHANNEL_OPTIONS, channelOptionsJson);
     }
 
 
