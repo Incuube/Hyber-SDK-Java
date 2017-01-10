@@ -25,7 +25,7 @@ public class MessageTest {
         String request = msg.toString();
         System.out.println(request);
         JSONObject actual = new JSONObject(request);
-        assertEquals(startTime, sdf.parse(actual.getString("start_time")).getTime() / 1000);
+        assertEquals(Math.round(startTime), Math.round(sdf.parse(actual.getString("start_time")).getTime()));
         assertEquals(phoneNumber, actual.getString("phone_number"));
 
         testNonRequiredFields(actual);
@@ -48,26 +48,26 @@ public class MessageTest {
                 .channels(push, viber, sms)
                 .startTime(startTime)
                 .push()
-                .ttl(pushTtl)
-                .text(pushText)
-                .img(pushImgUrl)
-                .action(pushActionUrl)
-                .caption(pushCaption)
-                .title(pushTitle)
-                .end()
+                    .ttl(pushTtl)
+                    .text(pushText)
+                    .img(pushImgUrl)
+                    .action(pushActionUrl)
+                    .caption(pushCaption)
+                    .title(pushTitle)
+                    .end()
                 .viber()
-                .ttl(viberTtl)
-                .text(viberText)
-                .img(viberImgUrl)
-                .action(viberActionUrl)
-                .caption(viberCaption)
-                .iosExpirityText(viberIosExpirityText)
-                .end()
+                    .ttl(viberTtl)
+                    .text(viberText)
+                    .img(viberImgUrl)
+                    .action(viberActionUrl)
+                    .caption(viberCaption)
+                    .iosExpirityText(viberIosExpirityText)
+                    .end()
                 .sms()
-                .text(smsText)
-                .alphaName(alphaName)
-                .ttl(smsTtl)
-                .end()
+                    .text(smsText)
+                    .alphaName(alphaName)
+                    .ttl(smsTtl)
+                    .end()
                 .build();
     }
 

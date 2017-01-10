@@ -2,9 +2,7 @@ package com.hyber.sdk.domain;
 
 import org.json.JSONObject;
 
-import static com.hyber.sdk.constants.jsonfields.RequestFields.ALPHA_NAME;
-import static com.hyber.sdk.constants.jsonfields.RequestFields.TEXT;
-import static com.hyber.sdk.constants.jsonfields.RequestFields.TTL;
+import static com.hyber.sdk.constants.jsonfields.RequestFields.*;
 
 final class SmsOptions {
 

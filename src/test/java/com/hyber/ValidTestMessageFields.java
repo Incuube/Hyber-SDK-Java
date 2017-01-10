@@ -25,7 +25,7 @@ final class ValidTestMessageFields {
      final static String pushText = "Push text";
      final static String pushImgUrl = "http://localhost.com/push/img/img.jpg";
      final static String pushActionUrl = "http://localhost.com/push/action";
-     final static String pushCaption = "Viber caption";
+     final static String pushCaption = "Push caption";
      final static String pushName = "push";
      final static String pushTitle = "Push title";
 
