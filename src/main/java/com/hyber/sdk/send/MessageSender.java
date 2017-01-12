@@ -10,6 +10,11 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.net.*;
 
+import static com.hyber.sdk.constants.HyberConstants.INTERNAL_SERVER_RESPONSE_CODE;
+import static com.hyber.sdk.constants.jsonfields.ErrorResponseFields.ERROR_CODE;
+import static java.net.HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+
 public final class MessageSender implements Sender {
 
     private String urlPattern = HyberConstants.URL_PATTERN;
@@ -26,20 +31,20 @@ public final class MessageSender implements Sender {
     }
 
     @Override
-    public Response send(Message message) throws Exception {
+    public Response send(Message message) {
         String url = String.format(urlPattern, identifier);
         String body = message.toString();
         return post(url, body, login, password, connectionTimeoutSec, readTimeoutSec, true);
     }
 
     @Override
-    public Response send(Message message, boolean closeConnectionAfterSend) throws Exception {
+    public Response send(Message message, boolean closeConnectionAfterSend) {
         String url = String.format(urlPattern, identifier);
         String body = message.toString();
         return post(url, body, login, password, connectionTimeoutSec, readTimeoutSec, closeConnectionAfterSend);
     }
 
-    private Response post(String url, String body, String login, String password, int connectionTimeout, int readTimeout, boolean closeConnection) throws Exception {
+    private Response post(String url, String body, String login, String password, int connectionTimeout, int readTimeout, boolean closeConnection) {
 
         HttpURLConnection connection = null;
         try {
@@ -107,15 +112,10 @@ public final class MessageSender implements Sender {
         responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             JSONObject answer = new JSONObject(getResponseBody(connection.getInputStream()));
-            response = new SuccessResponse();
-            Long messageId = answer.getLong(SuccessResponseFields.MESSAGE_ID);
-            response.setMessageId(messageId);
+            response = new SuccessResponse(responseCode, answer.getLong(SuccessResponseFields.MESSAGE_ID));
         } else {
             JSONObject answer = new JSONObject(getResponseBody(connection.getErrorStream()));
-            response = new ErrorResponse();
-            response.setHttpCode(responseCode);
-            response.setErrorCode(answer.getInt(ErrorResponseFields.ERROR_CODE));
-            response.setErrorText(answer.getString(ErrorResponseFields.ERROR_TEXT));
+            response = new ErrorResponse(responseCode, answer.getInt(ERROR_CODE), answer.getString(ErrorResponseFields.ERROR_TEXT));
         }
 
         return response;
@@ -132,17 +132,10 @@ public final class MessageSender implements Sender {
     }
 
     private static Response getErrorsResponse(Exception e) {
-        Response response = new ErrorResponse();
-        if (e instanceof SocketTimeoutException) {
-            response.setErrorCode(HttpURLConnection.HTTP_CLIENT_TIMEOUT);
-            response.setErrorText(e.getMessage());
-        } else {
-            response.setErrorCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            response.setErrorText(e.getMessage());
-        }
+        Response response;
+        response = new ErrorResponse(e instanceof SocketTimeoutException ? HTTP_CLIENT_TIMEOUT : HTTP_INTERNAL_ERROR, INTERNAL_SERVER_RESPONSE_CODE, e.getMessage());
         return response;
     }
-
 
     public String getLogin() {
         return login;

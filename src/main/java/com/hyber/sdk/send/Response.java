@@ -2,11 +2,19 @@ package com.hyber.sdk.send;
 
 public abstract class Response {
 
-    private Long messageId;
     private Integer httpCode;
-    private String errorText;
+    private Long messageId;
     private Integer errorCode;
 
+    Response(Integer httpCode, Long messageId, Integer errorCode, String errorText) {
+        this.httpCode = httpCode;
+        this.messageId = messageId;
+        this.errorCode = errorCode;
+        this.errorText = errorText;
+    }
+
+    private String errorText;
+    
     public abstract boolean hasErrors();
 
     public Long getMessageId() {
