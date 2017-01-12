@@ -9,7 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import static com.hyber.ValidTestMessageFields.*;
-import static com.hyber.sdk.domain.Partners.*;
+import static com.hyber.sdk.constants.Channels.push;
+import static com.hyber.sdk.constants.Channels.sms;
+import static com.hyber.sdk.constants.Channels.viber;
 import static org.junit.Assert.assertEquals;
 
 public class MessageTest {
