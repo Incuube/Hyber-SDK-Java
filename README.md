@@ -36,7 +36,7 @@ Message message = Message.builder()
                 .promotional(false) // optional, boolean
                 .tag("Some tag") // optional 
                 .callbackUrl("http://callbackurl.com") //optional, String
-                .channels(push, viber, sms) //mandatory, Partners enum values,
+                .channels(push, viber, sms) //mandatory, Channels enum values
                 .startTime(startTime) //time to start send message, in millis, UNIX format 
                 .push() //start buliding options of push channel
                     .ttl(15) //mandatory, time to wait before send to next partner,in sec, Integer

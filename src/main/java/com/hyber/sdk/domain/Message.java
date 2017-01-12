@@ -145,7 +145,7 @@ public final class Message {
 
     private JSONArray getJsonChannels() {
         String[] strChannels = new String[channels.size()];
-        for (int i=0; i<channels.size(); i++) {
+        for (int i = 0; i < channels.size(); i++) {
             strChannels[i] = channels.get(i).name();
         }
         return new JSONArray(strChannels);
@@ -167,6 +167,46 @@ public final class Message {
             }
         }
         result.put(RequestFields.CHANNEL_OPTIONS, channelOptionsJson);
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getExtraId() {
+        return extraId;
+    }
+
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public Boolean getPromotional() {
+        return promotional;
+    }
+
+    public List<Partners> getChannels() {
+        return channels;
+    }
+
+    public ViberOptions getViber() {
+        return viber;
+    }
+
+    public PushOptions getPush() {
+        return push;
+    }
+
+    public SmsOptions getSms() {
+        return sms;
     }
 
 
