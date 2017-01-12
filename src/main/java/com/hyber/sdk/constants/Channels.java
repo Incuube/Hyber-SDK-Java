@@ -1,6 +1,6 @@
 package com.hyber.sdk.constants;
 
-public enum Partners {
+public enum Channels {
 
     sms,
     push,
