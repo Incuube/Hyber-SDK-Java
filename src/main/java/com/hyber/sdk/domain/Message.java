@@ -1,5 +1,6 @@
 package com.hyber.sdk.domain;
 
+import com.hyber.sdk.constants.Channels;
 import com.hyber.sdk.constants.jsonfields.RequestFields;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,12 +18,12 @@ public final class Message {
     private Long startTime;
     private String tag;
     private Boolean promotional;
-    private List<Partners> channels;
+    private List<Channels> channels;
     private ViberOptions viber;
     private PushOptions push;
     private SmsOptions sms;
 
-    Message(String phoneNumber, String extraId, String callbackUrl, Long startTime, String tag, Boolean promotional, List<Partners> channels, ViberOptions viber, PushOptions push, SmsOptions sms) {
+    Message(String phoneNumber, String extraId, String callbackUrl, Long startTime, String tag, Boolean promotional, List<Channels> channels, ViberOptions viber, PushOptions push, SmsOptions sms) {
         this.phoneNumber = phoneNumber;
         this.extraId = extraId;
         this.callbackUrl = callbackUrl;
@@ -46,7 +47,7 @@ public final class Message {
         private Long startTime;
         private String tag;
         private Boolean promotional;
-        private List<Partners> channels;
+        private List<Channels> channels;
         private ViberOptions viber;
         private PushOptions push;
         private SmsOptions sms;
@@ -84,7 +85,7 @@ public final class Message {
             return this;
         }
 
-        public MessageBuilder channels(Partners... channels) {
+        public MessageBuilder channels(Channels... channels) {
             this.channels = Arrays.asList(channels);
             return this;
         }
@@ -151,9 +152,9 @@ public final class Message {
         return new JSONArray(strChannels);
     }
 
-    private void setChannelOptions(JSONObject result, List<Partners> channels) {
+    private void setChannelOptions(JSONObject result, List<Channels> channels) {
         JSONObject channelOptionsJson = new JSONObject();
-        for (Partners channel : channels) {
+        for (Channels channel : channels) {
             switch (channel) {
                 case push:
                     channelOptionsJson.put(channel.name(), push.toJson());
@@ -193,7 +194,7 @@ public final class Message {
         return promotional;
     }
 
-    public List<Partners> getChannels() {
+    public List<Channels> getChannels() {
         return channels;
     }
 
