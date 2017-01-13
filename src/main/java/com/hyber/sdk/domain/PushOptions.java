@@ -32,8 +32,8 @@ final class PushOptions {
         return jsonObject;
     }
 
-    static PushOptionsBuilder builder(Message.MessageBuilder builder) {
-        return new PushOptionsBuilder(builder);
+    static PushOptionsBuilder builder(Message.MessageBuilder builder, PushOptions push) {
+        return new PushOptionsBuilder(builder, push);
     }
 
     public static class PushOptionsBuilder {
@@ -45,8 +45,16 @@ final class PushOptions {
         private String action;
         private String title;
 
-        PushOptionsBuilder(Message.MessageBuilder v2RequestBuilder) {
+        PushOptionsBuilder(Message.MessageBuilder v2RequestBuilder, PushOptions push) {
             this.v2RequestBuilder = v2RequestBuilder;
+            if (push != null) {
+                text = push.getText();
+                ttl = push.getTtl();
+                img = push.getImg();
+                caption = push.getCaption();
+                action = push.getAction();
+                title = push.getTitle();
+            }
         }
 
         public PushOptionsBuilder text(String text) {
@@ -86,7 +94,30 @@ final class PushOptions {
         public Message.MessageBuilder end() {
             return v2RequestBuilder.push(build());
         }
+        
+    }
 
+    public String getText() {
+        return text;
+    }
 
+    public Integer getTtl() {
+        return ttl;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }

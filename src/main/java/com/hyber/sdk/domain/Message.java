@@ -91,15 +91,15 @@ public final class Message {
         }
 
         public ViberOptions.ViberOptionsBuilder viber() {
-            return ViberOptions.builder(this);
+            return ViberOptions.builder(this, viber);
         }
 
         public PushOptions.PushOptionsBuilder push() {
-            return PushOptions.builder(this);
+            return PushOptions.builder(this, push);
         }
 
         public SmsOptions.SmsOptionsBuilder sms() {
-            return SmsOptions.builder(this);
+            return SmsOptions.builder(this, sms);
         }
 
         MessageBuilder viber(ViberOptions viber) {
