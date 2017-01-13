@@ -24,8 +24,8 @@ final class SmsOptions {
         return jsonObject;
     }
 
-    static SmsOptionsBuilder builder(Message.MessageBuilder builder) {
-        return new SmsOptionsBuilder(builder);
+    static SmsOptionsBuilder builder(Message.MessageBuilder builder, SmsOptions sms) {
+        return new SmsOptionsBuilder(builder, sms);
     }
 
 
@@ -35,8 +35,13 @@ final class SmsOptions {
         private String alphaName;
         private final Message.MessageBuilder v2RequestBuilder;
 
-        SmsOptionsBuilder(Message.MessageBuilder v2RequestBuilder) {
+        SmsOptionsBuilder(Message.MessageBuilder v2RequestBuilder, SmsOptions sms) {
             this.v2RequestBuilder = v2RequestBuilder;
+            if (sms != null) {
+                text = sms.getText();
+                ttl = sms.getTtl();
+                alphaName = sms.getAlphaName();
+            }
         }
 
 
@@ -63,5 +68,17 @@ final class SmsOptions {
             return v2RequestBuilder.sms(build());
         }
 
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Integer getTtl() {
+        return ttl;
+    }
+
+    public String getAlphaName() {
+        return alphaName;
     }
 }

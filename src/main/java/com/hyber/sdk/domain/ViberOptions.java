@@ -32,8 +32,8 @@ final class ViberOptions {
         return jsonObject;
     }
 
-    static ViberOptionsBuilder builder(Message.MessageBuilder builder) {
-        return new ViberOptionsBuilder(builder);
+    static ViberOptionsBuilder builder(Message.MessageBuilder builder, ViberOptions viber) {
+        return new ViberOptionsBuilder(builder, viber);
     }
 
     public static class ViberOptionsBuilder {
@@ -45,8 +45,16 @@ final class ViberOptions {
         private String iosExpirityText;
         private Message.MessageBuilder v2RequestBuilder;
 
-        ViberOptionsBuilder(Message.MessageBuilder messageBuilder) {
+        ViberOptionsBuilder(Message.MessageBuilder messageBuilder, ViberOptions viber) {
             this.v2RequestBuilder = messageBuilder;
+            if (viber != null){
+                text= viber.getText();
+                ttl = viber.getTtl();
+                img = viber.getImg();
+                caption = viber.getCaption();
+                action = viber.getAction();
+                iosExpirityText = viber.getIosExpirityText();
+            }
         }
 
         public ViberOptionsBuilder text(String text) {
@@ -87,5 +95,29 @@ final class ViberOptions {
             return new ViberOptions(text, ttl, img, caption, action, iosExpirityText);
         }
 
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Integer getTtl() {
+        return ttl;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getIosExpirityText() {
+        return iosExpirityText;
     }
 }
