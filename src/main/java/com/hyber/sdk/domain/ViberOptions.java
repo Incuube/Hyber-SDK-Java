@@ -3,7 +3,7 @@ package com.hyber.sdk.domain;
 import com.hyber.sdk.constants.jsonfields.RequestFields;
 import org.json.JSONObject;
 
-final class ViberOptions {
+public final class ViberOptions {
 
     private String text;
     private Integer ttl;

@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import static com.hyber.sdk.constants.jsonfields.RequestFields.*;
 
-final class SmsOptions {
+public final class SmsOptions {
 
     private String text;
     private Integer ttl;

@@ -3,7 +3,7 @@ package com.hyber.sdk.domain;
 import com.hyber.sdk.constants.jsonfields.RequestFields;
 import org.json.JSONObject;
 
-final class PushOptions {
+public final class PushOptions {
 
     private String text;
     private Integer ttl;
