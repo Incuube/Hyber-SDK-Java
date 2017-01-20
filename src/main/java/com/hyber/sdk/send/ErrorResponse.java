@@ -6,7 +6,7 @@ public final class ErrorResponse extends Response {
         return true;
     }
 
-    ErrorResponse(int httpCode, int errorCode, String errorText) {
-        super(httpCode, null, errorCode, errorText);
+    ErrorResponse(Integer httpCode, Integer errorCode, String errorText, String rawResponse) {
+        super(httpCode, null, errorCode, errorText, rawResponse);
     }
 }

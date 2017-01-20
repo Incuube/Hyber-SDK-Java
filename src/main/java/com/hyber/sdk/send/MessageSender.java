@@ -31,20 +31,20 @@ public final class MessageSender implements Sender {
     }
 
     @Override
-    public Response send(Message message) {
+    public Response send(Message message) throws IOException, URISyntaxException {
         String url = String.format(urlPattern, identifier);
         String body = message.toString();
         return post(url, body, login, password, connectionTimeoutSec, readTimeoutSec, true);
     }
 
     @Override
-    public Response send(Message message, boolean closeConnectionAfterSend) {
+    public Response send(Message message, boolean closeConnectionAfterSend) throws IOException, URISyntaxException {
         String url = String.format(urlPattern, identifier);
         String body = message.toString();
         return post(url, body, login, password, connectionTimeoutSec, readTimeoutSec, closeConnectionAfterSend);
     }
 
-    private Response post(String url, String body, String login, String password, int connectionTimeout, int readTimeout, boolean closeConnection) {
+    private Response post(String url, String body, String login, String password, int connectionTimeout, int readTimeout, boolean closeConnection) throws IOException, URISyntaxException {
 
         HttpURLConnection connection = null;
         try {
@@ -54,8 +54,6 @@ public final class MessageSender implements Sender {
             setAuth(connection, login, password);
             sendHttp(connection.getOutputStream(), body);
             return getResponse(connection);
-        } catch (Exception e) {
-            return getErrorsResponse(e);
         } finally {
             if (connection != null) {
                 if (closeConnection) {
@@ -110,12 +108,24 @@ public final class MessageSender implements Sender {
         Response response;
         int responseCode;
         responseCode = connection.getResponseCode();
+        String rawResponse;
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            JSONObject answer = new JSONObject(getResponseBody(connection.getInputStream()));
-            response = new SuccessResponse(responseCode, answer.getLong(SuccessResponseFields.MESSAGE_ID));
+            rawResponse = getResponseBody(connection.getInputStream());
+            try {
+                JSONObject answer = new JSONObject(rawResponse);
+                response = new SuccessResponse(responseCode, answer.getLong(SuccessResponseFields.MESSAGE_ID), rawResponse);
+            } catch (Exception e) {
+                response = new ErrorResponse(responseCode, INTERNAL_SERVER_RESPONSE_CODE, e.getMessage(), rawResponse);
+            }
         } else {
-            JSONObject answer = new JSONObject(getResponseBody(connection.getErrorStream()));
-            response = new ErrorResponse(responseCode, answer.getInt(ERROR_CODE), answer.getString(ErrorResponseFields.ERROR_TEXT));
+            rawResponse = getResponseBody(connection.getErrorStream());
+            try {
+
+                JSONObject answer = new JSONObject(getResponseBody(connection.getErrorStream()));
+                response = new ErrorResponse(responseCode, answer.getInt(ERROR_CODE), answer.getString(ErrorResponseFields.ERROR_TEXT), rawResponse);
+            } catch (Exception e) {
+                response = new ErrorResponse(responseCode, INTERNAL_SERVER_RESPONSE_CODE, e.getMessage(), rawResponse);
+            }
         }
 
         return response;
@@ -129,12 +139,6 @@ public final class MessageSender implements Sender {
             sb.append(line);
         }
         return sb.toString();
-    }
-
-    private static Response getErrorsResponse(Exception e) {
-        Response response;
-        response = new ErrorResponse(e instanceof SocketTimeoutException ? HTTP_CLIENT_TIMEOUT : HTTP_INTERNAL_ERROR, INTERNAL_SERVER_RESPONSE_CODE, e.getMessage());
-        return response;
     }
 
     public String getLogin() {
