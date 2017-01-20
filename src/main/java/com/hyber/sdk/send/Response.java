@@ -5,12 +5,14 @@ public abstract class Response {
     private Integer httpCode;
     private Long messageId;
     private Integer errorCode;
+    private String rawResponse;
 
-    Response(Integer httpCode, Long messageId, Integer errorCode, String errorText) {
+    Response(Integer httpCode, Long messageId, Integer errorCode, String errorText, String rawResponse) {
         this.httpCode = httpCode;
         this.messageId = messageId;
         this.errorCode = errorCode;
         this.errorText = errorText;
+        this.rawResponse = rawResponse;
     }
 
     private String errorText;
@@ -47,5 +49,13 @@ public abstract class Response {
 
     void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
+    }
+
+    public String getRawResponse() {
+        return rawResponse;
+    }
+
+    public void setRawResponse(String rawResponse) {
+        this.rawResponse = rawResponse;
     }
 }
