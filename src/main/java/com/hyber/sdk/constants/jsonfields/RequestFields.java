@@ -18,6 +18,8 @@ public final class RequestFields {
   public final static String  ACTION = "action";
   public final static String  IMG = "img";
   public final static String  PUSH_TITLE = "title";
+  public final static String DATA = "data";
+  public final static String TEMPLATE = "template";
 
   private RequestFields() {
   }
