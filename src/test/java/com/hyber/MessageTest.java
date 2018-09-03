@@ -12,6 +12,7 @@ import static com.hyber.ValidTestMessageFields.*;
 import static com.hyber.sdk.constants.Channels.push;
 import static com.hyber.sdk.constants.Channels.sms;
 import static com.hyber.sdk.constants.Channels.viber;
+import static com.hyber.sdk.constants.Channels.vk;
 import static org.junit.Assert.assertEquals;
 
 public class MessageTest {
@@ -38,6 +39,7 @@ public class MessageTest {
         testViberOptions(actualChannelOptions);
         testSmsOptions(actualChannelOptions);
         testPushOptions(actualChannelOptions);
+        testVkOptions(actualChannelOptions);
     }
 
     private Message generateValidMessage(long startTime) {
@@ -47,7 +49,7 @@ public class MessageTest {
                 .promotional(promotional)
                 .tag(tag)
                 .callbackUrl(callbackUrl)
-                .channels(push, viber, sms)
+                .channels(push, viber, vk, sms)
                 .startTime(startTime)
                 .push()
                     .ttl(pushTtl)
@@ -64,6 +66,10 @@ public class MessageTest {
                     .action(viberActionUrl)
                     .caption(viberCaption)
                     .iosExpirityText(viberIosExpirityText)
+                    .end()
+                .vk()
+                    .ttl(vkTtl)
+                    .text(vkText)
                     .end()
                 .sms()
                     .text(smsText)
@@ -103,6 +109,12 @@ public class MessageTest {
         assertEquals(alphaName, actualSmsOptions.getString("alpha_name"));
     }
 
+    private void testVkOptions(JSONObject actualChannelOptions) {
+        JSONObject actualVkOptions = actualChannelOptions.getJSONObject("vk");
+        assertEquals(vkTtl, actualVkOptions.getInt("ttl"));
+        assertEquals(vkText, actualVkOptions.getString("text"));
+    }
+
     private void testChannels(JSONArray actualOrder) {
         String actualPushJSON = (String) actualOrder.get(0);
         assertEquals(pushName, actualPushJSON);
@@ -110,7 +122,10 @@ public class MessageTest {
         String actualViberJSON = (String) actualOrder.get(1);
         assertEquals(viberName, actualViberJSON);
 
-        String smsJSON = (String) actualOrder.get(2);
+        String actualVkJson = (String) actualOrder.get(2);
+        assertEquals(vkName, actualVkJson);
+
+        String smsJSON = (String) actualOrder.get(3);
         assertEquals(smsName, smsJSON);
     }
 

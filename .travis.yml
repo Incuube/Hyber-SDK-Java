@@ -1,13 +1,20 @@
 sudo: false
 language: java
+dist: precise
 
 branches:
   only:
     - master
 
+install:
+  - mvn -Dhttps.protocols=TLSv1.2 install
+
 jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
+
+env:
+  - MAVEN_OPTS=https.protocols=TLSv1,TLSv1.1,TLSv1.2
 
 script: mvn test

@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.hyber.sdk.constants.Channels.vk;
+
 public final class Message {
 
     private String phoneNumber;
@@ -22,8 +24,10 @@ public final class Message {
     private ViberOptions viber;
     private PushOptions push;
     private SmsOptions sms;
+    private VkOptions vk;
 
-    Message(String phoneNumber, String extraId, String callbackUrl, Long startTime, String tag, Boolean promotional, List<Channels> channels, ViberOptions viber, PushOptions push, SmsOptions sms) {
+    Message(String phoneNumber, String extraId, String callbackUrl, Long startTime, String tag, Boolean promotional, List<Channels> channels, ViberOptions viber,
+            PushOptions push, SmsOptions sms, VkOptions vk) {
         this.phoneNumber = phoneNumber;
         this.extraId = extraId;
         this.callbackUrl = callbackUrl;
@@ -34,6 +38,7 @@ public final class Message {
         this.viber = viber;
         this.push = push;
         this.sms = sms;
+        this.vk = vk;
     }
 
     public static MessageBuilder builder() {
@@ -51,6 +56,7 @@ public final class Message {
         private ViberOptions viber;
         private PushOptions push;
         private SmsOptions sms;
+        private VkOptions vk;
 
         MessageBuilder() {
         }
@@ -102,6 +108,10 @@ public final class Message {
             return SmsOptions.builder(this, sms);
         }
 
+        public VkOptions.VkOptionsBuilder vk() {
+            return VkOptions.builder(this, vk);
+        }
+
         MessageBuilder viber(ViberOptions viber) {
             this.viber = viber;
             return this;
@@ -117,8 +127,13 @@ public final class Message {
             return this;
         }
 
+        MessageBuilder vk(VkOptions vk) {
+            this.vk = vk;
+            return this;
+        }
+
         public Message build() {
-            return new Message(phoneNumber, extraId, callbackUrl, startTime, tag, promotional, channels, viber, push, sms);
+            return new Message(phoneNumber, extraId, callbackUrl, startTime, tag, promotional, channels, viber, push, sms, vk);
         }
 
     }
@@ -165,6 +180,9 @@ public final class Message {
                 case sms:
                     channelOptionsJson.put(channel.name(), sms.toJson());
                     break;
+                case vk:
+                    channelOptionsJson.put(channel.name(), vk.toJson());
+                    break;
             }
         }
         result.put(RequestFields.CHANNEL_OPTIONS, channelOptionsJson);
@@ -210,5 +228,8 @@ public final class Message {
         return sms;
     }
 
+    public VkOptions getVk() {
+        return vk;
+    }
 
 }

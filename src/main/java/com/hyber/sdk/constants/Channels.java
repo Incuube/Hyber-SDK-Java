@@ -4,6 +4,7 @@ public enum Channels {
 
     sms,
     push,
-    viber;
+    viber,
+    vk;
 
 }
